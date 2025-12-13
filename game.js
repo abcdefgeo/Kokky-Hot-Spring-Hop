@@ -88,15 +88,24 @@ let steamX = 0;
 
 let hopSteam = [];
 
+let unlockedRanks = [];
+let banner = null;
+
+
 /* ===== PLAYER SETTER ===== */
 function setPlayer(playerId) {
   localStorage.setItem("playerId", playerId);
   playerIdLabel.textContent = "Player: " + playerId;
 
+// load best score
   const savedBoard = JSON.parse(localStorage.getItem("scoreboard") || "[]");
   const entry = savedBoard.find(e => e.id === playerId);
   bestScore = entry ? entry.score : 0;
-   
+
+// load unlocked ranks
+  unlockedRanks = JSON.parse(
+    localStorage.getItem(`ranks_${playerId}`) || "[]"
+  );
 }
 
 /* =====================================================
@@ -451,6 +460,34 @@ function drawObstacle(obs) {
   }
 }
 
+
+function checkRankUnlock() {
+  for (const r of RANKS) {
+    if (
+      score >= r.score &&
+      !unlockedRanks.includes(r.score)
+    ) {
+      unlockedRanks.push(r.score);
+
+      // save unlock
+      const pid = localStorage.getItem("playerId");
+      localStorage.setItem(
+        `ranks_${pid}`,
+        JSON.stringify(unlockedRanks)
+      );
+
+      // trigger banner
+      banner = {
+        text: r.name,
+        y: -80,
+        life: 90
+      };
+
+      break; // only one banner at a time
+    }
+  }
+}
+
 /* =====================================================
    MAIN LOOP
 ===================================================== */
@@ -521,6 +558,7 @@ console.log("loop running", hasPlayer, score);
     if (!obs.passed && obs.x + OB_W < player.x) {
       obs.passed = true;
       score++;
+      checkRankUnlock();
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem("bestScore", bestScore);
@@ -572,18 +610,71 @@ console.log("loop running", hasPlayer, score);
   // ================= PLAYER =================
   ctx.drawImage(kokkyImg, player.x, player.y, player.w, player.h);
 
+   
+  // ================= BANNER =================
+   
+drawBanner();
+   
   // ================= BOTTOM STEAM =================
   ctx.globalAlpha = 0.55;
   const steamY = H - 120;
   ctx.drawImage(steamImg, steamX, steamY);
   ctx.drawImage(steamImg, steamX + W, steamY);
   ctx.globalAlpha = 1;
-
-
+   
   requestAnimationFrame(loop);
 }
 
 loop();
+
+/* =====================================================
+   DRAW: RANK BANNER
+===================================================== */
+function drawBanner() {
+  if (!banner) return;
+
+  // slide down
+  if (banner.y < 40) banner.y += 4;
+
+  const W = gameWidth();
+
+  ctx.save();
+
+  // gold background
+  ctx.fillStyle = "#f5d76e";
+  ctx.fillRect(0, banner.y, W, 48);
+
+  // text
+  ctx.fillStyle = "#150818";
+  ctx.font = "22px Handjet";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(
+    `RANK UNLOCKED: ${banner.text}`,
+    W / 2,
+    banner.y + 24
+  );
+
+  // sparkles
+  for (let i = 0; i < 6; i++) {
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.beginPath();
+    ctx.arc(
+      Math.random() * W,
+      banner.y + Math.random() * 48,
+      2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  banner.life--;
+  if (banner.life <= 0) banner = null;
+}
+
 
 function saveScore() {
   const playerId = localStorage.getItem("playerId");
