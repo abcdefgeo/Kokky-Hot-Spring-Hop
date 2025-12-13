@@ -180,11 +180,13 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 #playerIdLabel {
   font-weight: 700;
   font-size: 0.9rem;
+  color: #ffffff;
   white-space: nowrap;
 }
 
