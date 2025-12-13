@@ -259,9 +259,8 @@ function doJump() {
   }
 
   player.vy = JUMP;
-}
 
-  // hop steam near foot, more transparent
+  // hop steam near foot
   hopSteam.push({
     x: player.x + player.w * 0.55,
     y: player.y + player.h - 3,
