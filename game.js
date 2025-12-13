@@ -645,22 +645,22 @@ drawBanner();
 loop();
 
 /* =====================================================
-   DRAW: RANK BANNER (CARD STYLE)
+   DRAW: RANK BANNER (CARD STYLE – POLISHED)
 ===================================================== */
 function drawBanner() {
   if (!banner) return;
 
   const W = gameWidth();
 
-  // final target position (roughly moon height)
+  // target position (near moon height)
   const targetY = 70;
 
-  // smooth slide
+  // slide down gently
   if (banner.y < targetY) {
     banner.y += 2.5;
   }
 
-  // fade out during last second
+  // fade out during last second (~60 frames)
   if (banner.life < 60) {
     banner.alpha = banner.life / 60;
   }
@@ -671,37 +671,53 @@ function drawBanner() {
   const y = banner.y;
 
   ctx.save();
-  ctx.globalAlpha = banner.alpha;
+  ctx.globalAlpha = banner.alpha ?? 1;
 
-  // === GOLD GRADIENT CARD ===
-  const grad = ctx.createRadialGradient(
-    x + cardW / 2,
-    y + cardH / 2,
-    10,
-    x + cardW / 2,
-    y + cardH / 2,
-    cardW
+  /* === SOFT GOLD GLOW === */
+  ctx.shadowColor = "rgba(245, 215, 110, 0.6)";
+  ctx.shadowBlur = 18;
+
+  /* === GOLD GRADIENT CARD === */
+  const grad = ctx.createLinearGradient(
+    x,
+    y,
+    x,
+    y + cardH
   );
   grad.addColorStop(0, "#fff2b0");
-  grad.addColorStop(1, "#d6b45a");
+  grad.addColorStop(1, "#d6a94d");
 
   ctx.fillStyle = grad;
   roundRect(ctx, x, y, cardW, cardH, 18);
   ctx.fill();
 
-  // === TEXT ===
+  // remove glow for text & sparkles
+  ctx.shadowBlur = 0;
+
+  /* === TEXT === */
   ctx.fillStyle = "#0A1633"; // navy (sky color)
   ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
 
   ctx.font = "20px Handjet";
-  ctx.fillText("Rank Up:", W / 2, y + 40);
+  ctx.fillText(
+    "Rank Up:",
+    W / 2,
+    y + 42
+  );
 
   ctx.font = "26px Handjet";
-  ctx.fillText(`${banner.text}!`, W / 2, y + 72);
+  ctx.fillText(
+    `${banner.text}!`,
+    W / 2,
+    y + 72
+  );
 
-  // === SPARKLES ===
-  for (let i = 0; i < 8; i++) {
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
+  /* === SPARKLES (DENSITY TAPERS OFF) === */
+  const sparkleCount = 10 + Math.floor(banner.life / 30);
+
+  for (let i = 0; i < sparkleCount; i++) {
+    ctx.fillStyle = `rgba(255,255,255,${0.4 + Math.random() * 0.4})`;
     ctx.beginPath();
     ctx.arc(
       x + Math.random() * cardW,
