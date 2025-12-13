@@ -66,20 +66,23 @@ const TEAM_IDS = {
   Admin: ["G","S"]
 };
 
-function showOverlayIfNeeded() {
-  const saved = localStorage.getItem("playerId");
+/* =====================================================
+   PLAYER SELECT OVERLAY CONTROL
+===================================================== */
 
-  if (saved) {
-    hasPlayer = true;
-    overlay.classList.add("hidden");
-    playerIdLabel.textContent = "Player: " + saved;
-  } else {
-    hasPlayer = false;
-    overlay.classList.remove("hidden");
-  }
+function showOverlayIfNeeded() {
+  // Always require player selection on page load
+  hasPlayer = false;
+  overlay.classList.remove("hidden");
+
+  // Clear any old preview text
+  preview.textContent = "";
+  playBtn.classList.add("hidden");
 }
 
+// Run once on load
 showOverlayIfNeeded();
+
 
 
 teamButtons.forEach(btn => {
@@ -403,6 +406,11 @@ function drawObstacle(obs) {
    MAIN LOOP
 ===================================================== */
 function loop() {
+   
+     // ================= TOP UI =================
+  scoreEl.textContent = "Score: " + score;
+  bestEl.textContent = "Best: " + bestScore;
+   
    if (!hasPlayer) {
   requestAnimationFrame(loop);
   return;
@@ -522,9 +530,6 @@ function loop() {
   ctx.drawImage(steamImg, steamX + W, steamY);
   ctx.globalAlpha = 1;
 
-  // ================= TOP UI =================
-  scoreEl.textContent = "Score: " + score;
-  bestEl.textContent = "Best: " + bestScore;
 
   requestAnimationFrame(loop);
 }
