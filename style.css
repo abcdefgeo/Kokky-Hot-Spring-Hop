@@ -2,7 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* NO SCROLL */
 }
 
 body {
@@ -11,15 +11,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
-/* Canvas */
+/* Canvas scales visually but keeps internal resolution */
 #game {
   display: block;
   width: 100%;
-  max-width: 480px;
-  aspect-ratio: 2 / 3;
+  max-width: 480px;     /* desktop cap */
+  aspect-ratio: 2 / 3;  /* portrait game */
   touch-action: manipulation;
 }
 
@@ -50,6 +49,7 @@ body {
 .playerBox h2 {
   margin: 0 0 12px;
   font-size: 1.4rem;
+  font-weight: 400;
 }
 
 /* Team grid */
@@ -133,7 +133,4 @@ body {
   cursor: pointer;
 }
 
-/* Utility */
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
