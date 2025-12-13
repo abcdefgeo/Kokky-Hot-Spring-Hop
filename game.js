@@ -491,10 +491,13 @@ function checkRankUnlock() {
 
       // trigger banner
 banner = {
+  title: "Rank Up",
   text: r.name,
-  y: -60,
-  life: 180   // ~3 seconds
+  y: -20,          // starts just above final position
+  alpha: 1,
+  life: 180        // ~3 seconds at 60fps
 };
+
 
 
       break; // only one banner at a time
@@ -642,54 +645,68 @@ drawBanner();
 loop();
 
 /* =====================================================
-   DRAW: RANK BANNER
+   DRAW: RANK BANNER (CARD STYLE)
 ===================================================== */
 function drawBanner() {
   if (!banner) return;
 
   const W = gameWidth();
-  const targetY = 120; // just below the moon
 
-  // slide down gently
+  // final target position (roughly moon height)
+  const targetY = 70;
+
+  // smooth slide
   if (banner.y < targetY) {
-    banner.y += 3;
+    banner.y += 2.5;
   }
 
-  ctx.save();
+  // fade out during last second
+  if (banner.life < 60) {
+    banner.alpha = banner.life / 60;
+  }
 
-  // ===== Gold gradient rectangle =====
-  const grad = ctx.createLinearGradient(0, banner.y, 0, banner.y + 44);
-  grad.addColorStop(0, "#fff1a8");
-  grad.addColorStop(0.5, "#f5d76e");
-  grad.addColorStop(1, "#d4af37");
+  const cardW = 240;
+  const cardH = 110;
+  const x = (W - cardW) / 2;
+  const y = banner.y;
+
+  ctx.save();
+  ctx.globalAlpha = banner.alpha;
+
+  // === GOLD GRADIENT CARD ===
+  const grad = ctx.createRadialGradient(
+    x + cardW / 2,
+    y + cardH / 2,
+    10,
+    x + cardW / 2,
+    y + cardH / 2,
+    cardW
+  );
+  grad.addColorStop(0, "#fff2b0");
+  grad.addColorStop(1, "#d6b45a");
 
   ctx.fillStyle = grad;
-  ctx.fillRect(20, banner.y, W - 40, 44);
+  roundRect(ctx, x, y, cardW, cardH, 18);
+  ctx.fill();
 
-  // subtle border
-  ctx.strokeStyle = "rgba(255,255,255,0.6)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(20, banner.y, W - 40, 44);
-
-  // ===== Text =====
-  ctx.fillStyle = "#150818";
-  ctx.font = "22px Handjet";
+  // === TEXT ===
+  ctx.fillStyle = "#0A1633"; // navy (sky color)
   ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(
-    `RANK UNLOCKED: ${banner.text}`,
-    W / 2,
-    banner.y + 22
-  );
 
-  // ===== Sparkles (light, classy) =====
-  for (let i = 0; i < 4; i++) {
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.font = "20px Handjet";
+  ctx.fillText("Rank Up:", W / 2, y + 40);
+
+  ctx.font = "26px Handjet";
+  ctx.fillText(`${banner.text}!`, W / 2, y + 72);
+
+  // === SPARKLES ===
+  for (let i = 0; i < 8; i++) {
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
     ctx.beginPath();
     ctx.arc(
-      20 + Math.random() * (W - 40),
-      banner.y + Math.random() * 44,
-      1.5,
+      x + Math.random() * cardW,
+      y + Math.random() * cardH,
+      Math.random() * 2 + 1,
       0,
       Math.PI * 2
     );
@@ -698,11 +715,30 @@ function drawBanner() {
 
   ctx.restore();
 
-  // lifetime
   banner.life--;
   if (banner.life <= 0) banner = null;
 }
 
+/* =====================================================
+   HELPER: ROUNDED RECTANGLE
+===================================================== */
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+/* =====================================================
+   SCORE SAVE
+===================================================== */
 
 function saveScore() {
   const playerId = localStorage.getItem("playerId");
