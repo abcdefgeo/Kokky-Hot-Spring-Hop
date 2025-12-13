@@ -140,6 +140,12 @@ playBtn.addEventListener("click", () => {
 
   localStorage.setItem("playerId", pid);
   hasPlayer = true;
+  started = false;
+  gameOver = false;
+
+  player.vy = 0;
+  player.y = 200;
+   
   overlay.classList.add("hidden");
 
   playerIdLabel.textContent = "Player: " + pid;
