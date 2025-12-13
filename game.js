@@ -75,25 +75,22 @@ function setPlayer(playerId) {
 /* =====================================================
    PLAYER SELECT OVERLAY CONTROL
 ===================================================== */
-function showOverlayIfNeeded() {
-  const savedPlayer = localStorage.getItem("playerId");
+function showOverlayOnLoad() {
+  // Always force player selection on page load
+  hasPlayer = false;
+  started = false;
+  gameOver = false;
 
-  if (savedPlayer) {
-    hasPlayer = true;
-    overlay.classList.add("hidden");
-    setPlayer(savedPlayer);   // restore label on reload
-  } else {
-    hasPlayer = false;
-    overlay.classList.remove("hidden");
+  overlay.classList.remove("hidden");
 
-    // reset overlay UI
-    preview.textContent = "";
-    playBtn.classList.add("hidden");
-  }
+  // reset overlay UI
+  preview.textContent = "";
+  playBtn.classList.add("hidden");
 }
 
-// Run once on load
-showOverlayIfNeeded();
+// Run once on page load
+showOverlayOnLoad();
+
 
 
 teamButtons.forEach(btn => {
