@@ -13,6 +13,8 @@ canvas {
   width: 100vw;
   height: 100vh;
 }
+
+/* Modal */
 .modal {
   position: fixed;
   inset: 0;
@@ -38,6 +40,7 @@ canvas {
   margin-bottom: 12px;
 }
 
+/* Buttons */
 .button-row {
   display: flex;
   flex-wrap: wrap;
@@ -48,6 +51,7 @@ canvas {
 
 button {
   font-family: 'Handjet', sans-serif;
+  font-size: 18px;
   padding: 8px 14px;
   border-radius: 12px;
   border: none;
@@ -57,4 +61,13 @@ button {
 .confirm {
   background: #ff7aa2;
   color: black;
+}
+
+/* Dropdown */
+select {
+  font-family: 'Handjet', sans-serif;
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: none;
 }
