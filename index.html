@@ -5,14 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Kokky’s Hot Spring Hop</title>
 
-  <!-- Handjet font -->
   <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- CANVAS -->
   <canvas id="game"></canvas>
 
   <!-- PLAYER SELECT OVERLAY -->
@@ -20,7 +17,6 @@
     <div class="playerBox">
       <h2>Select Player</h2>
 
-      <!-- TEAM BUTTONS -->
       <div class="teamGrid">
         <button class="teamBtn white" data-team="W">White</button>
         <button class="teamBtn red" data-team="R">Red</button>
@@ -31,16 +27,13 @@
         <button class="teamBtn admin" data-team="Admin">Admin</button>
       </div>
 
-      <!-- ID SECTION -->
       <div id="idSection" class="hidden">
         <div class="sectionTitle">Choose ID</div>
         <div id="idList"></div>
       </div>
 
-      <!-- PREVIEW -->
       <div id="playerPreview"></div>
 
-      <!-- PLAY BUTTON -->
       <button id="playBtn" class="playBtn hidden">Play!</button>
     </div>
   </div>
