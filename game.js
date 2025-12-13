@@ -475,27 +475,41 @@ function drawObstacle(obs) {
 
 
 function checkRankUnlock() {
-  // trigger every 5 points
-  if (score > 0 && score % 5 === 0) {
 
-    // prevent repeat trigger for the same score
-    if (banner || unlockedRanks.includes(score)) return;
+  // ===== TEST MODE =====
+  if (TEST_RANK_MODE) {
+    if (score > 0 && score % 5 === 0) {
+      if (banner || unlockedRanks.includes(score)) return;
 
-    unlockedRanks.push(score);
+      unlockedRanks.push(score);
 
-    banner = {
-      text: `Level ${score}`,
-      y: -80,
-      life: 180,   // 3 seconds
-      alpha: 1
-    };
+      banner = {
+        text: `Level ${score}`,
+        y: -80,
+        life: 180,
+        alpha: 1
+      };
+    }
+    return; // ⛔ exits function, NO break used here
   }
-}
 
-      break; // only one banner at a time
+  // ===== REAL RANK MODE =====
+  for (const r of RANKS) {
+    if (score >= r.score && !unlockedRanks.includes(r.score)) {
+      unlockedRanks.push(r.score);
+
+      banner = {
+        text: r.name,
+        y: -80,
+        life: 180,
+        alpha: 1
+      };
+
+      return; // ✅ use return instead of break
     }
   }
 }
+
 
 /* =====================================================
    MAIN LOOP
