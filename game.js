@@ -52,6 +52,11 @@ const bestEl = document.getElementById("best");
 const playerIdLabel = document.getElementById("playerIdLabel");
 const changePlayerBtn = document.getElementById("changePlayerBtn");
 
+// restore player label on reload
+const savedPlayer = localStorage.getItem("playerId");
+if (savedPlayer) {
+  playerIdLabel.textContent = "Player: " + savedPlayer;
+}
 
 let selectedTeam = null;
 let selectedId = null;
