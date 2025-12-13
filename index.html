@@ -5,31 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Kokky’s Hot Spring Hop</title>
 
-  <!-- Handjet -->
+  <!-- Handjet font -->
   <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="playerModal" class="modal">
-  <div class="modal-box">
-    <h2>Choose Player</h2>
 
-    <div id="teamButtons" class="button-row">
-      <button data-team="W">White</button>
-      <button data-team="R">Red</button>
-      <button data-team="G">Green</button>
-      <button data-team="B">Blue</button>
-      <button data-team="Guest">Guest</button>
-      <button data-team="Admin">Admin</button>
+  <!-- Player Selection Modal -->
+  <div id="playerModal" class="modal">
+    <div class="modal-box">
+      <h2>Choose Player</h2>
+
+      <div id="teamButtons" class="button-row">
+        <button data-team="W">White</button>
+        <button data-team="R">Red</button>
+        <button data-team="G">Green</button>
+        <button data-team="B">Blue</button>
+        <button data-team="Guest">Guest</button>
+        <button data-team="Admin">Admin</button>
+      </div>
+
+      <div class="button-row">
+        <select id="idSelect" disabled>
+          <option value="">Select</option>
+        </select>
+      </div>
+
+      <button id="confirmPlayer" class="confirm" disabled>Confirm</button>
     </div>
-
-    <div id="idButtons" class="button-row"></div>
-
-    <button id="confirmPlayer" class="confirm" disabled>Confirm</button>
   </div>
-</div>
 
+  <!-- Game Canvas -->
   <canvas id="gameCanvas"></canvas>
 
   <script src="game.js"></script>
