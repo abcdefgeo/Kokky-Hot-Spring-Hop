@@ -5,14 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Kokky’s Hot Spring Hop</title>
 
-  <!-- Handjet font -->
   <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Player Selection Modal -->
   <div id="playerModal" class="modal">
     <div class="modal-box">
       <h2>Choose Player</h2>
@@ -26,8 +23,9 @@
         <button data-team="Admin">Admin</button>
       </div>
 
-      <div class="button-row">
-        <select id="idSelect" disabled>
+      <!-- Hidden until team selected -->
+      <div id="selectRow" class="button-row hidden">
+        <select id="idSelect">
           <option value="">Select</option>
         </select>
       </div>
@@ -36,9 +34,7 @@
     </div>
   </div>
 
-  <!-- Game Canvas -->
   <canvas id="gameCanvas"></canvas>
-
   <script src="game.js"></script>
 </body>
 </html>
