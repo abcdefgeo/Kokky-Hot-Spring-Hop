@@ -126,6 +126,17 @@ const RANKS = [
 // 🔧 TEST SWITCH
 const TEST_RANK_MODE = true;
 
+
+/* =====================================================
+   TEST RANKS
+===================================================== */
+
+function getTestRankName(score) {
+  // simulate rank progression every 5 points
+  const index = Math.floor(score / 5) - 1;
+  return RANKS[index]?.name || "Onsen Rookie";
+}
+
 /* =====================================================
    PLAYER SELECT OVERLAY CONTROL
 ===================================================== */
@@ -485,22 +496,22 @@ function checkRankUnlock() {
   if (TEST_RANK_MODE) {
     if (score > 0 && score % 5 === 0) {
 
-      // prevent retriggering on the same score
       if (banner || lastBannerScore === score) return;
-
       lastBannerScore = score;
 
       banner = {
-        text: `Level ${score}`,
+        text: getTestRankName(score),
         y: -60,
         life: 180,
         alpha: 1,
-        sparkles: Array.from({ length: 14 }, () => ({
+
+        // static sparkles (no movement)
+        sparkles: Array.from({ length: 10 }, () => ({
           x: Math.random(),
           y: Math.random(),
-          r: Math.random() * 2 + 1,
-          vy: Math.random() * 0.15 + 0.05, // slow elegant drift
-          a: Math.random() * 0.5 + 0.4
+          r: Math.random() * 1.8 + 0.8,
+          a: Math.random() * 0.4 + 0.4,
+          pulse: Math.random() * Math.PI * 2
         }))
       };
     }
@@ -516,13 +527,15 @@ function checkRankUnlock() {
         text: r.name,
         y: -60,
         life: 180,
-        alpha: 1
+        alpha: 1,
+        sparkles: createBannerSparkles()
       };
 
       return;
     }
   }
 }
+
 
 
 /* =====================================================
@@ -733,21 +746,22 @@ function drawBanner() {
     y + 72
   );
 
-/* === SLOW ELEGANT SPARKLES === */
+// === STATIC SPARKLES (ELEGANT GLOW) ===
 banner.sparkles.forEach(s => {
-  const sx = x + s.x * cardW;
-  const sy = y + s.y * cardH;
+  s.pulse += 0.04; // slow shimmer
+  const alpha = s.a + Math.sin(s.pulse) * 0.15;
 
-  ctx.fillStyle = `rgba(255,255,255,${s.a * banner.alpha})`;
+  ctx.fillStyle = `rgba(255,255,255,${alpha})`;
   ctx.beginPath();
-  ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
+  ctx.arc(
+    x + s.x * cardW,
+    y + s.y * cardH,
+    s.r,
+    0,
+    Math.PI * 2
+  );
   ctx.fill();
-
-  // slow upward drift
-  s.y -= s.vy;
-  if (s.y < -0.1) s.y = 1.1;
 });
-
 
   ctx.restore();
 
