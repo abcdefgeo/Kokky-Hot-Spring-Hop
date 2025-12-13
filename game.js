@@ -490,11 +490,12 @@ function checkRankUnlock() {
       );
 
       // trigger banner
-      banner = {
-        text: r.name,
-        y: -80,
-        life: 90
-      };
+banner = {
+  text: r.name,
+  y: -60,
+  life: 180   // ~3 seconds
+};
+
 
       break; // only one banner at a time
     }
@@ -646,18 +647,31 @@ loop();
 function drawBanner() {
   if (!banner) return;
 
-  // slide down
-  if (banner.y < 40) banner.y += 4;
-
   const W = gameWidth();
+  const targetY = 120; // just below the moon
+
+  // slide down gently
+  if (banner.y < targetY) {
+    banner.y += 3;
+  }
 
   ctx.save();
 
-  // gold background
-  ctx.fillStyle = "#f5d76e";
-  ctx.fillRect(0, banner.y, W, 48);
+  // ===== Gold gradient rectangle =====
+  const grad = ctx.createLinearGradient(0, banner.y, 0, banner.y + 44);
+  grad.addColorStop(0, "#fff1a8");
+  grad.addColorStop(0.5, "#f5d76e");
+  grad.addColorStop(1, "#d4af37");
 
-  // text
+  ctx.fillStyle = grad;
+  ctx.fillRect(20, banner.y, W - 40, 44);
+
+  // subtle border
+  ctx.strokeStyle = "rgba(255,255,255,0.6)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, banner.y, W - 40, 44);
+
+  // ===== Text =====
   ctx.fillStyle = "#150818";
   ctx.font = "22px Handjet";
   ctx.textAlign = "center";
@@ -665,17 +679,17 @@ function drawBanner() {
   ctx.fillText(
     `RANK UNLOCKED: ${banner.text}`,
     W / 2,
-    banner.y + 24
+    banner.y + 22
   );
 
-  // sparkles
-  for (let i = 0; i < 6; i++) {
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
+  // ===== Sparkles (light, classy) =====
+  for (let i = 0; i < 4; i++) {
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.beginPath();
     ctx.arc(
-      Math.random() * W,
-      banner.y + Math.random() * 48,
-      2,
+      20 + Math.random() * (W - 40),
+      banner.y + Math.random() * 44,
+      1.5,
       0,
       Math.PI * 2
     );
@@ -684,6 +698,7 @@ function drawBanner() {
 
   ctx.restore();
 
+  // lifetime
   banner.life--;
   if (banner.life <= 0) banner = null;
 }
