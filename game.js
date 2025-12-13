@@ -87,8 +87,8 @@ const player = {
   vy: 0
 };
 
-const GRAVITY = 0.6;
-const JUMP = -10;
+const GRAVITY = 0.5;
+const JUMP = -8;
 
 /* ---------- Obstacles ---------- */
 const woodImg = new Image();
@@ -96,9 +96,9 @@ woodImg.src = "wood.png";
 
 let obstacles = [];
 const OBSTACLE_WIDTH = 70;
-const GAP = 160;
+const GAP = 170;
 const SPEED = 2.5;
-const SPAWN_DISTANCE = 260;
+const SPAWN_DISTANCE = 270;
 let spawnX = 0;
 
 /* ---------- Game State ---------- */
