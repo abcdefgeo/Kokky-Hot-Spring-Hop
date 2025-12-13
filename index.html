@@ -11,6 +11,25 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="playerModal" class="modal">
+  <div class="modal-box">
+    <h2>Choose Player</h2>
+
+    <div id="teamButtons" class="button-row">
+      <button data-team="W">White</button>
+      <button data-team="R">Red</button>
+      <button data-team="G">Green</button>
+      <button data-team="B">Blue</button>
+      <button data-team="Guest">Guest</button>
+      <button data-team="Admin">Admin</button>
+    </div>
+
+    <div id="idButtons" class="button-row"></div>
+
+    <button id="confirmPlayer" class="confirm" disabled>Confirm</button>
+  </div>
+</div>
+
   <canvas id="gameCanvas"></canvas>
 
   <script src="game.js"></script>
