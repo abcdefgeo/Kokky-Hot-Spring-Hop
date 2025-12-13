@@ -15,16 +15,30 @@ html, body {
 }
 
 body {
-  background: linear-gradient(#0A1633, #000814);
   font-family: "Handjet", sans-serif;
   color: #ffffff;
   display: flex;
   justify-content: center;
 }
+  
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: linear-gradient(#0A1633, #000814);
+  overflow: hidden;
+}
+
+/* stars + snow now scoped */
+.page .star,
+.page .snow {
+  position: absolute;
+}
 
 /* ===== Stars ===== */
 .star {
-  position: fixed;
+  position: absolute;
   background: #ffd966;
   border-radius: 50%;
   opacity: 0.9;
@@ -33,7 +47,7 @@ body {
 
 /* ===== Snow ===== */
 .snow {
-  position: fixed;
+  position: absolute;
   background: #ffffff;
   border-radius: 50%;
   opacity: 0.8;
