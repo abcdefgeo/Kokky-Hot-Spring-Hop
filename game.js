@@ -475,30 +475,22 @@ function drawObstacle(obs) {
 
 
 function checkRankUnlock() {
-  for (const r of RANKS) {
-    if (
-      score >= r.score &&
-      !unlockedRanks.includes(r.score)
-    ) {
-      unlockedRanks.push(r.score);
+  // trigger every 5 points
+  if (score > 0 && score % 5 === 0) {
 
-      // save unlock
-      const pid = localStorage.getItem("playerId");
-      localStorage.setItem(
-        `ranks_${pid}`,
-        JSON.stringify(unlockedRanks)
-      );
+    // prevent repeat trigger for the same score
+    if (banner || unlockedRanks.includes(score)) return;
 
-      // trigger banner
-banner = {
-  title: "Rank Up",
-  text: r.name,
-  y: -20,          // starts just above final position
-  alpha: 1,
-  life: 180        // ~3 seconds at 60fps
-};
+    unlockedRanks.push(score);
 
-
+    banner = {
+      text: `Level ${score}`,
+      y: -80,
+      life: 180,   // 3 seconds
+      alpha: 1
+    };
+  }
+}
 
       break; // only one banner at a time
     }
