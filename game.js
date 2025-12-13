@@ -67,20 +67,15 @@ const TEAM_IDS = {
 };
 
 function showOverlayIfNeeded() {
-  if (localStorage.getItem("playerId")) {
-    hasPlayer = true;
-    overlay.classList.add("hidden");
-  } else {
-    hasPlayer = false;
-    overlay.classList.remove("hidden");
-  }
+  hasPlayer = false;
+  overlay.classList.remove("hidden");
 }
+
 showOverlayIfNeeded();
 
-const savedPlayer = localStorage.getItem("playerId");
-if (savedPlayer) {
-  playerIdLabel.textContent = "Player: " + savedPlayer;
-}
+// Do NOT set playerIdLabel here anymore
+// It will be set only after Play! is pressed
+
 
 teamButtons.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -119,14 +114,23 @@ teamButtons.forEach(btn => {
 });
 
 playBtn.addEventListener("click", () => {
-  const pid = (selectedTeam === "Guest") ? "Guest" : `${selectedTeam}-${selectedId}`;
+  let pid;
+
+  if (selectedTeam === "Guest") {
+    pid = "Guest";
+  } else if (selectedId === "A" || selectedId === "B") {
+    pid = `${selectedTeam}-${selectedId} (ALT)`;
+  } else {
+    pid = `${selectedTeam}-${selectedId}`;
+  }
+
   localStorage.setItem("playerId", pid);
   hasPlayer = true;
   overlay.classList.add("hidden");
 
-playerIdLabel.textContent = "Player: " + pid;
-   
+  playerIdLabel.textContent = "Player: " + pid;
 });
+
 
 /* =====================================================
    CHANGE BUTTON
