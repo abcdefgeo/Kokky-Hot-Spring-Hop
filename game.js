@@ -122,6 +122,14 @@ const RANKS = [
   { score: 1000, name: "Onsen God" }
 ];
 
+function getRankForScore(score) {
+  let best = null;
+  for (const r of RANKS) {
+    if (score >= r.score) best = r.name;
+  }
+  return best;
+}
+
 
 /* =====================================================
    PLAYER SELECT OVERLAY CONTROL
@@ -759,22 +767,26 @@ function saveScore() {
 
   let board = JSON.parse(localStorage.getItem("scoreboard") || "[]");
 
-  const rank = "—"; // rank system comes later
+  const rank = getRankForScore(score) || "—";
 
   const existing = board.find(e => e.id === playerId);
 
-  if (existing) {
-    if (score > existing.score) {
-      existing.score = score;
-      existing.rank = rank;
-    }
-  } else {
-    board.push({
-      id: playerId,
-      score: score,
-      rank: rank
-    });
+if (existing) {
+  // update high score if beaten
+  if (score > existing.score) {
+    existing.score = score;
   }
+
+  // ALWAYS update best rank (rank never downgrades)
+  existing.rank = getRankForScore(existing.score) || "—";
+
+} else {
+  board.push({
+    id: playerId,
+    score: score,
+    rank: getRankForScore(score) || "—"
+  });
+}
 
   localStorage.setItem("scoreboard", JSON.stringify(board));
 }
