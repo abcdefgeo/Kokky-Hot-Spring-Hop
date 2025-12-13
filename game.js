@@ -395,13 +395,13 @@ function loop() {
   const W = gameWidth();
   const H = gameHeight();
 
-  // clear in CSS pixel coords
+  // clear once
   ctx.clearRect(0, 0, W, H);
 
-  // background layers
+  // ================= BACKGROUND =================
   drawSkyAndMoon();
 
-  // update snow only if not frozen
+  // update snow
   if (!gameOver) {
     for (const f of snow) {
       f.y += f.s;
@@ -409,7 +409,7 @@ function loop() {
     }
   }
 
-  // update parallax layers
+  // ================= PARALLAX =================
   if (!gameOver) {
     mountainX -= 0.15;
     if (mountainX <= -W) mountainX = 0;
@@ -418,27 +418,34 @@ function loop() {
     if (steamX <= -W) steamX = 0;
   }
 
-  // gravity active once player selected (no floating after Play!)
+  // ================= PHYSICS =================
   if (hasPlayer && !gameOver) {
     player.vy += GRAVITY;
     player.y += player.vy;
   }
 
-  // spawn obstacles only after the first jump
+  // ================= MOUNTAINS (behind obstacles) =================
+  const mountainH = 160;
+  const mountainY = H - 260;
+  ctx.drawImage(mountainsImg, mountainX, mountainY, W, mountainH);
+  ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
+
+  // ================= OBSTACLES =================
   if (started && !gameOver) {
-    if (obstacles.length === 0 ||
-        spawnX - obstacles[obstacles.length - 1].x >= SPAWN_DISTANCE) {
+    if (
+      obstacles.length === 0 ||
+      spawnX - obstacles[obstacles.length - 1].x >= SPAWN_DISTANCE
+    ) {
       spawnObstacle();
     }
   }
 
-  // move + draw obstacles, scoring, collision
   for (const obs of obstacles) {
     if (!gameOver) obs.x -= SPEED;
 
     drawObstacle(obs);
 
-    // scoring: passed obstacle
+    // scoring
     if (!obs.passed && obs.x + OB_W < player.x) {
       obs.passed = true;
       score++;
@@ -448,7 +455,7 @@ function loop() {
       }
     }
 
-    // collision (slightly smaller hitbox)
+    // collision
     const hitBox = {
       x: player.x + 6,
       y: player.y + 6,
@@ -456,50 +463,31 @@ function loop() {
       h: player.h - 12
     };
 
-    const inX = hitBox.x < obs.x + OB_W && hitBox.x + hitBox.w > obs.x;
+    const inX =
+      hitBox.x < obs.x + OB_W &&
+      hitBox.x + hitBox.w > obs.x;
+
     if (!gameOver && inX) {
       const hitsTop = hitBox.y < obs.gapY;
-      const hitsBottom = (hitBox.y + hitBox.h) > (obs.gapY + GAP);
-      if (hitsTop || hitsBottom) gameOver = true;
-       saveScore();
+      const hitsBottom =
+        hitBox.y + hitBox.h > obs.gapY + GAP;
+
+      if (hitsTop || hitsBottom) {
+        gameOver = true;
+        saveScore();
+      }
     }
   }
 
-  // floor/ceiling freeze
+  // ================= FLOOR / CEILING =================
   if (!gameOver && hasPlayer) {
-    if (player.y < 0 || player.y + player.h > H) gameOver = true;
-     saveScore();
+    if (player.y < 0 || player.y + player.h > H) {
+      gameOver = true;
+      saveScore();
+    }
   }
 
-  // mountains + steam (draw after obstacles? mountains should be behind obstacles)
-  // mountains behind obstacles is already achieved because we draw them here AFTER sky but BEFORE steam + player
-  // but obstacles are currently drawn before mountains; that would put mountains on top.
-  // So: draw mountains + steam AFTER sky, BEFORE obstacles? We already drew obstacles.
-  // Fix: draw mountains now, but it should be behind obstacles. We'll redraw steam only after obstacles.
-  // To keep it simple and correct visually: draw mountains earlier next frame by ordering below.
-  // (We will handle ordering by drawing mountains + steam after sky AND BEFORE obstacles next frame)
-  // For this frame, do it correctly by drawing mountains first next:
-  // -> we already drew obstacles, so we won't redraw mountains now. Instead, we draw mountains+steam BEFORE obstacles every frame.
-  // We'll implement correct ordering by moving calls: easiest is to call drawMountainsAndSteam BEFORE obstacle loop.
-  // (Already done below with a second pass: drawMountainsAndSteam now will overlay mountains on obstacles, so we do NOT do that.)
-  // We'll handle layering properly by drawing mountains and steam BEFORE obstacles:
-  // (See adjusted ordering below)
-
-  // === Correct ordering pass ===
-  // Redraw everything with correct layer order (fast enough for this simple game)
-  ctx.clearRect(0, 0, W, H);
-  drawSkyAndMoon();
-  // snow already drawn; ok
-  // mountains
-  const mountainH = 160;
-  const mountainY = H - 260;
-  ctx.drawImage(mountainsImg, mountainX, mountainY, W, mountainH);
-  ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
-
-  // obstacles (on top of mountains)
-  for (const obs of obstacles) drawObstacle(obs);
-
-  // hop steam (closer to foot, transparent)
+  // ================= HOP STEAM =================
   hopSteam.forEach(p => {
     ctx.fillStyle = `rgba(255,255,255,${p.life / 24})`;
     ctx.beginPath();
@@ -509,22 +497,21 @@ function loop() {
   });
   hopSteam = hopSteam.filter(p => p.life > 0);
 
-  // bottom steam on top
+  // ================= PLAYER =================
+  ctx.drawImage(kokkyImg, player.x, player.y, player.w, player.h);
+
+  // ================= BOTTOM STEAM =================
   ctx.globalAlpha = 0.55;
   const steamY = H - 120;
   ctx.drawImage(steamImg, steamX, steamY);
   ctx.drawImage(steamImg, steamX + W, steamY);
   ctx.globalAlpha = 1;
 
-  // player
-  ctx.drawImage(kokkyImg, player.x, player.y, player.w, player.h);
+  // ================= TOP UI =================
+  scoreEl.textContent = "Score: " + score;
+  bestEl.textContent = "Best: " + bestScore;
 
-   // TOP UI (HTML)
-scoreEl.textContent = "Score: " + score;
-bestEl.textContent = "Best: " + bestScore;
-   
   requestAnimationFrame(loop);
-
 }
 
 loop();
