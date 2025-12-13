@@ -444,7 +444,8 @@ function drawObstacle(obs) {
    MAIN LOOP
 ===================================================== */
 function loop() {
-  // ===== ALWAYS UPDATE TOP UI =====
+console.log("loop running", hasPlayer, score);
+   // ===== ALWAYS UPDATE TOP UI =====
   scoreEl.textContent = "Score: " + score;
   bestEl.textContent = "Best: " + bestScore;
 
