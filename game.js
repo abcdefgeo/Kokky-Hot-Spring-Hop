@@ -90,6 +90,7 @@ let hopSteam = [];
 
 let banner = null;
 let lastRankShown = null;
+let unlockedRanks = [];
 
 
 /* ===== PLAYER SETTER ===== */
@@ -346,6 +347,8 @@ function resetGame() {
   score = 0;
   started = false;
   gameOver = false;
+
+   lastRankShown = null;
 }
 
 function spawnObstacle() {
@@ -579,7 +582,6 @@ console.log("loop running", hasPlayer, score);
       checkRankUnlock();
       if (score > bestScore) {
         bestScore = score;
-        localStorage.setItem("bestScore", bestScore);
       }
     }
 
