@@ -7,19 +7,12 @@ const ctx = canvas.getContext("2d");
 const VIRTUAL_WIDTH = 390;
 const VIRTUAL_HEIGHT = 844;
 
-let scale = 1;
-let offsetX = 0;
-let offsetY = 0;
+let scale = 1, offsetX = 0, offsetY = 0;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
-  scale = Math.min(
-    canvas.width / VIRTUAL_WIDTH,
-    canvas.height / VIRTUAL_HEIGHT
-  );
-
+  scale = Math.min(canvas.width / VIRTUAL_WIDTH, canvas.height / VIRTUAL_HEIGHT);
   offsetX = (canvas.width - VIRTUAL_WIDTH * scale) / 2;
   offsetY = (canvas.height - VIRTUAL_HEIGHT * scale) / 2;
 }
@@ -27,76 +20,12 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 /* ===============================
-   PLAYER SELECTION
-================================ */
-const modal = document.getElementById("playerModal");
-const teamButtons = document.getElementById("teamButtons");
-const idSelect = document.getElementById("idSelect");
-const selectRow = document.getElementById("selectRow");
-const confirmBtn = document.getElementById("confirmPlayer");
-
-let selectedTeam = null;
-let selectedId = null;
-
-const teamData = {
-  W: [5,8,9,18,19,22,28,29,30,34,"A","B"],
-  R: [1,4,6,7,11,13,20,21,27,31,40,"A","B"],
-  G: [10,12,14,23,24,26,35,36,37,39,"A","B"],
-  B: [2,3,15,16,17,25,32,33,38,41,"A","B"],
-};
-
-teamButtons.addEventListener("click", e => {
-  if (!e.target.dataset.team) return;
-  selectedTeam = e.target.dataset.team;
-  selectedId = null;
-  confirmBtn.disabled = true;
-  idSelect.innerHTML = `<option value="">Select</option>`;
-  selectRow.classList.remove("hidden");
-
-  if (selectedTeam === "Guest") {
-    addOption("0", "0");
-  } else if (selectedTeam === "Admin") {
-    addOption("G", "G");
-    addOption("S", "S");
-  } else {
-    teamData[selectedTeam].forEach(id => {
-      addOption(id, id === "A" || id === "B" ? `${id} (ALT)` : id);
-    });
-  }
-});
-
-function addOption(value, label) {
-  const opt = document.createElement("option");
-  opt.value = value;
-  opt.textContent = label;
-  idSelect.appendChild(opt);
-}
-
-idSelect.addEventListener("change", () => {
-  selectedId = idSelect.value;
-  confirmBtn.disabled = !selectedId;
-});
-
-confirmBtn.onclick = () => {
-  const pid = selectedTeam === "Guest" ? "Guest" : `${selectedTeam}-${selectedId}`;
-  localStorage.setItem("playerId", pid);
-  modal.style.display = "none";
-};
-
-/* ===============================
    ASSETS
 ================================ */
-const kokkyImg = new Image();
-kokkyImg.src = "kokky.png";
-
-const woodImg = new Image();
-woodImg.src = "wood.png";
-
-const mountainsImg = new Image();
-mountainsImg.src = "mountains.png";
-
-const steamImg = new Image();
-steamImg.src = "steam.png";
+const kokkyImg = new Image(); kokkyImg.src = "kokky.png";
+const woodImg = new Image(); woodImg.src = "wood.png";
+const mountainsImg = new Image(); mountainsImg.src = "mountains.png";
+const steamImg = new Image(); steamImg.src = "steam.png";
 
 /* ===============================
    PLAYER
@@ -147,35 +76,30 @@ function jump() {
   }
 
   player.vy = JUMP;
-  hopSteam.push({ x: player.x - 10, y: player.y + player.h / 2, life: 12 });
+  hopSteam.push({
+    x: player.x + player.w / 2,
+    y: player.y + player.h - 4,
+    life: 14
+  });
 }
 
-window.addEventListener("keydown", e => {
-  if (e.code === "Space") jump();
-});
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  jump();
-});
+window.addEventListener("keydown", e => e.code === "Space" && jump());
+canvas.addEventListener("touchstart", e => { e.preventDefault(); jump(); });
 
 /* ===============================
    HELPERS
 ================================ */
 function spawnObstacle() {
-  const minY = 100;
-  const maxY = VIRTUAL_HEIGHT - GAP - 200;
+  const minY = 120;
+  const maxY = VIRTUAL_HEIGHT - GAP - 220;
   const gapY = Math.random() * (maxY - minY) + minY;
   obstacles.push({ x: spawnX, gapY, passed: false });
   spawnX += SPAWN_DISTANCE;
 }
 
 function hit(a, b) {
-  return (
-    a.x < b.x + b.w &&
-    a.x + a.w > b.x &&
-    a.y < b.y + b.h &&
-    a.y + a.h > b.y
-  );
+  return a.x < b.x + b.w && a.x + a.w > b.x &&
+         a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
 function resetGame() {
@@ -188,27 +112,28 @@ function resetGame() {
 }
 
 /* ===============================
-   VISUALS
+   VISUAL ELEMENTS
 ================================ */
 // stars
 const stars = Array.from({ length: 60 }, () => ({
   x: Math.random() * VIRTUAL_WIDTH,
   y: Math.random() * VIRTUAL_HEIGHT * 0.6,
-  r: Math.random() * 1.5 + 0.5,
+  r: Math.random() * 1.4 + 0.6,
   c: Math.random() < 0.7 ? "#ffd966" : "#ffffff"
 }));
 
-// snow
-const snow = Array.from({ length: 40 }, () => ({
+// snow (bigger)
+const snow = Array.from({ length: 35 }, () => ({
   x: Math.random() * VIRTUAL_WIDTH,
   y: Math.random() * VIRTUAL_HEIGHT,
-  s: Math.random() * 0.5 + 0.3
+  s: Math.random() * 0.4 + 0.3,
+  r: Math.random() * 1.5 + 1
 }));
 
 // hop steam
 let hopSteam = [];
 
-// mountains scroll
+// mountain scroll
 let mountainX = 0;
 
 // steam scroll
@@ -219,18 +144,35 @@ let steamX = 0;
 ================================ */
 function drawMoon() {
   const x = 300, y = 120, r = 36;
-  const g = ctx.createRadialGradient(x, y, r * 0.3, x, y, r * 1.4);
+
+  // glow
+  const g = ctx.createRadialGradient(x, y, r * 0.4, x, y, r * 1.6);
   g.addColorStop(0, "rgba(255,245,210,0.9)");
   g.addColorStop(1, "rgba(255,245,210,0)");
   ctx.fillStyle = g;
   ctx.beginPath();
-  ctx.arc(x, y, r * 1.4, 0, Math.PI * 2);
+  ctx.arc(x, y, r * 1.6, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#f6e9b8";
+  // moon body
+  ctx.fillStyle = "#f3e6b3";
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
+
+  // craters
+  const craters = [
+    { x: x - 10, y: y - 6, r: 5 },
+    { x: x + 8, y: y + 4, r: 4 },
+    { x: x - 2, y: y + 10, r: 3 }
+  ];
+
+  ctx.fillStyle = "rgba(210,200,160,0.6)";
+  craters.forEach(c => {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
 }
 
 function drawObstacle(obs) {
@@ -248,7 +190,6 @@ function drawObstacle(obs) {
    MAIN LOOP
 ================================ */
 function loop() {
-  // background
   ctx.fillStyle = "#02040b";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -264,29 +205,30 @@ function loop() {
     ctx.fill();
   });
 
-  // moon
   drawMoon();
 
   // snow
   snow.forEach(f => {
     ctx.fillStyle = "#fff";
-    ctx.fillRect(f.x, f.y, 1, 1);
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+    ctx.fill();
     if (!gameOver) {
       f.y += f.s;
       if (f.y > VIRTUAL_HEIGHT) f.y = 0;
     }
   });
 
-  // mountains
-  ctx.drawImage(mountainsImg, mountainX, 420);
-  ctx.drawImage(mountainsImg, mountainX + VIRTUAL_WIDTH, 420);
+  // mountains (farther away)
+  ctx.drawImage(mountainsImg, mountainX, 520, VIRTUAL_WIDTH, 180);
+  ctx.drawImage(mountainsImg, mountainX + VIRTUAL_WIDTH, 520, VIRTUAL_WIDTH, 180);
   if (!gameOver) {
-    mountainX -= 0.3;
+    mountainX -= 0.15;
     if (mountainX <= -VIRTUAL_WIDTH) mountainX = 0;
   }
 
-  // physics
-  if (started && !gameOver) {
+  // gravity always active (no floating)
+  if (!gameOver) {
     player.vy += GRAVITY;
     player.y += player.vy;
   }
@@ -320,42 +262,35 @@ function loop() {
     };
 
     const topBox = { x: obs.x, y: 0, w: OBSTACLE_WIDTH, h: obs.gapY };
-    const botBox = {
-      x: obs.x,
-      y: obs.gapY + GAP,
-      w: OBSTACLE_WIDTH,
-      h: VIRTUAL_HEIGHT
-    };
+    const botBox = { x: obs.x, y: obs.gapY + GAP, w: OBSTACLE_WIDTH, h: VIRTUAL_HEIGHT };
 
     if (!gameOver && (hit(hitBox, topBox) || hit(hitBox, botBox))) {
       gameOver = true;
     }
   });
 
-  // hop steam
+  // hop steam (closer + lighter)
   hopSteam.forEach(p => {
-    ctx.fillStyle = `rgba(255,255,255,${p.life / 12})`;
+    ctx.fillStyle = `rgba(255,255,255,${p.life / 20})`;
     ctx.beginPath();
-    ctx.ellipse(p.x, p.y, 10, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(p.x, p.y, 8, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     p.life--;
   });
   hopSteam = hopSteam.filter(p => p.life > 0);
 
-  // steam bottom
-  ctx.globalAlpha = 0.6;
+  // bottom steam
+  ctx.globalAlpha = 0.55;
   ctx.drawImage(steamImg, steamX, VIRTUAL_HEIGHT - 120);
   ctx.drawImage(steamImg, steamX + VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 120);
   ctx.globalAlpha = 1;
   if (!gameOver) {
-    steamX -= 0.2;
+    steamX -= 0.15;
     if (steamX <= -VIRTUAL_WIDTH) steamX = 0;
   }
 
-  // player
   ctx.drawImage(kokkyImg, player.x, player.y, player.w, player.h);
 
-  // UI
   ctx.fillStyle = "#fff";
   ctx.font = "20px Handjet";
   ctx.textAlign = "center";
