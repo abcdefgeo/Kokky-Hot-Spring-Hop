@@ -444,20 +444,19 @@ function drawObstacle(obs) {
    MAIN LOOP
 ===================================================== */
 function loop() {
-   
-     // ================= TOP UI =================
+  // ===== ALWAYS UPDATE TOP UI =====
   scoreEl.textContent = "Score: " + score;
   bestEl.textContent = "Best: " + bestScore;
-   
-   if (!hasPlayer) {
-  requestAnimationFrame(loop);
-  return;
-}
+
+  // Stop game simulation until player is chosen
+  if (!hasPlayer) {
+    ctx.clearRect(0, 0, gameWidth(), gameHeight());
+    requestAnimationFrame(loop);
+    return;
+  }
+
   const W = gameWidth();
   const H = gameHeight();
-
-  // clear once
-  ctx.clearRect(0, 0, W, H);
 
   // ================= BACKGROUND =================
   drawSkyAndMoon();
