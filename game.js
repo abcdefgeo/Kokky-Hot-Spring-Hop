@@ -90,6 +90,8 @@ let hopSteam = [];
 
 let unlockedRanks = [];
 let banner = null;
+let lastBannerScore = null;
+
 
 
 /* ===== PLAYER SETTER ===== */
@@ -482,18 +484,27 @@ function checkRankUnlock() {
   // ===== TEST MODE =====
   if (TEST_RANK_MODE) {
     if (score > 0 && score % 5 === 0) {
-      if (banner || unlockedRanks.includes(score)) return;
 
-      unlockedRanks.push(score);
+      // prevent retriggering on the same score
+      if (banner || lastBannerScore === score) return;
+
+      lastBannerScore = score;
 
       banner = {
         text: `Level ${score}`,
-        y: -80,
+        y: -60,
         life: 180,
-        alpha: 1
+        alpha: 1,
+        sparkles: Array.from({ length: 14 }, () => ({
+          x: Math.random(),
+          y: Math.random(),
+          r: Math.random() * 2 + 1,
+          vy: Math.random() * 0.15 + 0.05, // slow elegant drift
+          a: Math.random() * 0.5 + 0.4
+        }))
       };
     }
-    return; // ⛔ exits function, NO break used here
+    return;
   }
 
   // ===== REAL RANK MODE =====
@@ -503,12 +514,12 @@ function checkRankUnlock() {
 
       banner = {
         text: r.name,
-        y: -80,
+        y: -60,
         life: 180,
         alpha: 1
       };
 
-      return; // ✅ use return instead of break
+      return;
     }
   }
 }
@@ -722,21 +733,21 @@ function drawBanner() {
     y + 72
   );
 
-  /* === SPARKLES (DENSITY TAPERS OFF) === */
-  const sparkleCount = 10 + Math.floor(banner.life / 30);
+/* === SLOW ELEGANT SPARKLES === */
+banner.sparkles.forEach(s => {
+  const sx = x + s.x * cardW;
+  const sy = y + s.y * cardH;
 
-  for (let i = 0; i < sparkleCount; i++) {
-    ctx.fillStyle = `rgba(255,255,255,${0.4 + Math.random() * 0.4})`;
-    ctx.beginPath();
-    ctx.arc(
-      x + Math.random() * cardW,
-      y + Math.random() * cardH,
-      Math.random() * 2 + 1,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-  }
+  ctx.fillStyle = `rgba(255,255,255,${s.a * banner.alpha})`;
+  ctx.beginPath();
+  ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
+  ctx.fill();
+
+  // slow upward drift
+  s.y -= s.vy;
+  if (s.y < -0.1) s.y = 1.1;
+});
+
 
   ctx.restore();
 
