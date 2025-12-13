@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kokky's Hot Spring Hop – Scoreboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Handjet:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(#0A1633, #000814);
+  font-family: "Handjet", sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== Stars ===== */
+.star {
+  position: fixed;
+  background: #ffd966;
+  border-radius: 50%;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ===== Snow ===== */
+.snow {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  from { transform: translateY(-10px); }
+  to   { transform: translateY(110vh); }
+}
+
+/* ===== Main container ===== */
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background: rgba(10, 12, 28, 0.85);
+  border-radius: 20px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 400; /* not bold */
+  margin-bottom: 5px;
+}
+
+.sub {
+  text-align: center;
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+table {
+  width: 100%;
+  margin-top: 25px;
+  border-collapse: collapse;
+  font-size: 1.3rem;
+}
+
+th {
+  padding: 12px;
+  background: rgba(40, 50, 90, 0.9);
+  border-bottom: 2px solid #ffffff33;
+}
+
+td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ffffff22;
+}
+
+.backBtn {
+  margin: 20px auto 0;
+  display: block;
+  padding: 12px 26px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  background: #ff6b8b;
+  color: #150818;
+  border: none;
+  cursor: pointer;
+  font-family: "Handjet", sans-serif;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Kokky's Hot Spring Hop – Scoreboard</h1>
+  <div class="sub">
+    Showing scores recorded on this device only.<br>
+    Your scores are also saved to an overall scoreboard online.
+  </div>
+
+  <table id="scoreTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>High Score</th>
+        <th>Best Rank</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button class="backBtn" onclick="window.location.href='index.html'">
+    Back to Game
+  </button>
+
+  <div class="sub" style="margin-top:10px;">
+    Top 15 players on this device.
+  </div>
+</div>
+
+<script>
+/* ===== Create stars ===== */
+for (let i = 0; i < 50; i++) {
+  const s = document.createElement("div");
+  s.className = "star";
+  const size = Math.random() * 2 + 1;
+  s.style.width = size + "px";
+  s.style.height = size + "px";
+  s.style.left = Math.random() * 100 + "vw";
+  s.style.top = Math.random() * 60 + "vh";
+  s.style.background = Math.random() < 0.7 ? "#ffd966" : "#ffffff";
+  document.body.appendChild(s);
+}
+
+/* ===== Create snow ===== */
+for (let i = 0; i < 35; i++) {
+  const f = document.createElement("div");
+  f.className = "snow";
+  const size = Math.random() * 3 + 2;
+  f.style.width = size + "px";
+  f.style.height = size + "px";
+  f.style.left = Math.random() * 100 + "vw";
+  f.style.animationDuration = (Math.random() * 5 + 6) + "s";
+  f.style.animationDelay = Math.random() * 5 + "s";
+  document.body.appendChild(f);
+}
+
+/* ===== Load scores ===== */
+function loadScores() {
+  let list = JSON.parse(localStorage.getItem("scoreboard") || "[]");
+
+  list.sort((a,b) => b.score - a.score);
+  list = list.slice(0, 15);
+
+  const tbody = document.querySelector("#scoreTable tbody");
+  tbody.innerHTML = "";
+
+  list.forEach((entry, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${entry.id}</td>
+      <td>${entry.score}</td>
+      <td>${entry.rank}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+loadScores();
+</script>
+
+</body>
+</html>
