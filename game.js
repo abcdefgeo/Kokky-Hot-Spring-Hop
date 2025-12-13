@@ -160,10 +160,25 @@ playBtn.addEventListener("click", () => {
    CHANGE BUTTON
 ===================================================== */
 changePlayerBtn.addEventListener("click", () => {
+  // show overlay
   overlay.classList.remove("hidden");
-  hasPlayer = false;
-});
 
+  // HARD RESET GAME STATE
+  hasPlayer = false;
+  started = false;
+  gameOver = false;
+
+  score = 0;
+  player.vy = 0;
+  player.y = 200;
+
+  obstacles = [];
+  spawnX = 0;
+
+  // reset overlay UI
+  preview.textContent = "";
+  playBtn.classList.add("hidden");
+});
 
 /* =====================================================
    GAME CONSTANTS (LOCKED)
