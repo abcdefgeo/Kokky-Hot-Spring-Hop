@@ -27,7 +27,6 @@ function gameHeight() { return canvas.height / DPR; }
 let stars = [];
 let snow = [];
 let shootingStars = [];
-let fgSnow = []; // foreground snow
 
 const player = {
   x: 80,
@@ -299,16 +298,6 @@ snow = Array.from({ length: 45 }, () => ({
   alpha: Math.random() * 0.5 + 0.4,  // softness
   sway: Math.random() * Math.PI * 2, // side-to-side motion
   swaySpeed: Math.random() * 0.01 + 0.005
-}));
-
-// foreground snow (bigger, closer)
-fgSnow = Array.from({ length: 18 }, () => ({
-  x: Math.random() * W,
-  y: Math.random() * H,
-  r: Math.random() * 2.5 + 2,      // bigger flakes
-  vy: Math.random() * 0.6 + 0.4,   // faster fall
-  vx: Math.random() * 0.3 - 0.15,  // slight drift
-  alpha: Math.random() * 0.4 + 0.4
 }));
 
   // keep player in bounds after resize
@@ -611,22 +600,6 @@ for (const f of snow) {
   }
 }
 
-   // update foreground snow
-if (!gameOver) {
-  for (const f of fgSnow) {
-    f.y += f.vy;
-    f.x += f.vx;
-
-    // wrap around screen
-    if (f.y > H + 10) {
-      f.y = -10;
-      f.x = Math.random() * W;
-    }
-    if (f.x < -10) f.x = W + 10;
-    if (f.x > W + 10) f.x = -10;
-  }
-}
-
    // ================= SHOOTING STARS =================
 if (Math.random() < 0.003) { // rarity control
   spawnShootingStar();
@@ -747,22 +720,6 @@ shootingStars = shootingStars.filter(s => s.life > 0);
 
   // ================= PLAYER =================
   ctx.drawImage(kokkyImg, player.x, player.y, player.w, player.h);
-
-  // ================= FOREGROUND SNOW =================
-for (const f of fgSnow) {
-  ctx.save();
-  ctx.globalAlpha = f.alpha;
-
-  ctx.fillStyle = "#ffffff";
-  ctx.shadowColor = "#ffffff";
-  ctx.shadowBlur = 6;
-
-  ctx.beginPath();
-  ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.restore();
-}
 
   // ================= BANNER =================
    
