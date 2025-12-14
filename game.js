@@ -619,7 +619,7 @@ for (const f of snow) {
 }
 
    // ================= SHOOTING STARS =================
-if (Math.random() < 0.003) { // rarity control
+if (Math.random() < 0.001) { // rarity control
   spawnShootingStar();
 }
 
