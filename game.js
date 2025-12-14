@@ -273,13 +273,16 @@ function initBackground() {
   const W = gameWidth();
   const H = gameHeight();
 
-  // fixed stars (recreated on resize only)
-  stars = Array.from({ length: 60 }, () => ({
-    x: Math.random() * W,
-    y: Math.random() * H * 0.6,
-    r: Math.random() * 1.4 + 0.6,
-    c: Math.random() < 0.7 ? "#ffd966" : "#ffffff"
-  }));
+// fixed stars with subtle twinkle (recreated on resize only)
+stars = Array.from({ length: 60 }, () => ({
+  x: Math.random() * W,
+  y: Math.random() * H * 0.6,
+  r: Math.random() * 1.2 + 0.6,
+  baseAlpha: Math.random() * 0.4 + 0.4,
+  twinkleSpeed: Math.random() * 0.01 + 0.002,
+  phase: Math.random() * Math.PI * 2,
+  c: Math.random() < 0.7 ? "#ffd966" : "#ffffff"
+}));
 
   // bigger snow (recreated on resize only)
   snow = Array.from({ length: 35 }, () => ({
@@ -388,13 +391,22 @@ function drawSkyAndMoon() {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // stars (fixed)
-  for (const s of stars) {
-    ctx.fillStyle = s.c;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
+// stars (subtle twinkle)
+for (const s of stars) {
+  s.phase += s.twinkleSpeed;
+
+  const alpha =
+    s.baseAlpha + Math.sin(s.phase) * 0.15;
+
+  ctx.fillStyle = s.c;
+  ctx.globalAlpha = alpha;
+
+  ctx.beginPath();
+  ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+ctx.globalAlpha = 1;
 
   // moon with warm color + slight texture (YOUR CODE)
   ctx.save();
