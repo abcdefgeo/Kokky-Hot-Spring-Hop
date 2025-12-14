@@ -247,7 +247,7 @@ changePlayerBtn.addEventListener("click", () => {
 /* =====================================================
    GAME CONSTANTS (LOCKED)
 ===================================================== */
-const GRAVITY = 0.5;
+const GRAVITY = 0.55;
 const JUMP = -8;
 const GAP = 150;
 const SPEED = 2.5;
