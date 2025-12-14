@@ -85,9 +85,10 @@ body {
 
 h1 {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;   /* smaller, 1-line */
   font-weight: 400;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  white-space: nowrap; /* force single line */
 }
 
 .sub {
@@ -191,6 +192,24 @@ function getRankForScore(score) {
   return best;
 }
 
+  function getPlayerColor(playerId) {
+  if (!playerId) return "#ffffff";
+
+  if (playerId === "Guest" || playerId.startsWith("Admin")) {
+    return "#ffd966"; // warm gold
+  }
+
+  const team = playerId[0];
+
+  switch (team) {
+    case "W": return "#f5f5f5";     // soft white
+    case "R": return "#ff6b6b";     // warm red
+    case "G": return "#5fd38d";     // readable green
+    case "B": return "#6fa8ff";     // brighter blue for contrast
+    default:  return "#ffffff";
+  }
+}
+
   function getRankStyle(rank) {
   switch (rank) {
     case "Steam Hopper":
@@ -259,19 +278,27 @@ function loadScores() {
 list.forEach((entry, i) => {
   const tr = document.createElement("tr");
 
-  const rankName = getRankForScore(entry.score);
-  const rankStyle = getRankStyle(rankName);
+  const playerColor = getPlayerColor(entry.id);
+  const rankStyle = getRankStyle(getRankForScore(entry.score));
 
   tr.innerHTML = `
     <td>${i + 1}</td>
-    <td>${entry.id}</td>
+
+    <td style="
+      color: ${playerColor};
+      font-weight: 600;
+    ">
+      ${entry.id}
+    </td>
+
     <td>${entry.score}</td>
+
     <td style="
       color: ${rankStyle.color};
       text-shadow: ${rankStyle.glow};
       font-weight: 600;
     ">
-      ${rankName}
+      ${getRankForScore(entry.score)}
     </td>
   `;
 
