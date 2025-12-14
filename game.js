@@ -548,8 +548,8 @@ function createBannerSparkles(count = 12) {
 function loop() {
 console.log("loop running", hasPlayer, score);
    // ===== ALWAYS UPDATE TOP UI =====
-  scoreEl.textContent = "Score: " + score;
-  bestEl.textContent = "Best: " + bestScore;
+document.getElementById("scoreValue").textContent = score;
+document.getElementById("bestValue").textContent = bestScore;
 
   // Stop game simulation until player is chosen
   if (!hasPlayer) {
