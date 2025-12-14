@@ -249,7 +249,7 @@ changePlayerBtn.addEventListener("click", () => {
 ===================================================== */
 const GRAVITY = 0.5;
 const JUMP = -8;
-const GAP = 170;
+const GAP = 150;
 const SPEED = 2.5;
 const SPAWN_DISTANCE = 270;
 
