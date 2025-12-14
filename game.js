@@ -26,6 +26,7 @@ function gameHeight() { return canvas.height / DPR; }
 
 let stars = [];
 let snow = [];
+let shootingStars = [];
 
 const player = {
   x: 80,
@@ -572,6 +573,36 @@ document.getElementById("bestValue").textContent = bestScore;
     }
   }
 
+   // ================= SHOOTING STARS =================
+if (Math.random() < 0.003) { // rarity control
+  spawnShootingStar();
+}
+
+shootingStars.forEach(s => {
+  s.x += s.vx;
+  s.y += s.vy;
+  s.life--;
+
+  ctx.save();
+  ctx.globalAlpha = Math.min(s.life / 20, 1);
+
+  // glow trail
+  ctx.strokeStyle = "#fff2b0";
+  ctx.lineWidth = 2;
+  ctx.shadowColor = "#ffd966";
+  ctx.shadowBlur = 12;
+
+  ctx.beginPath();
+  ctx.moveTo(s.x, s.y);
+  ctx.lineTo(s.x - s.vx * 3, s.y - s.vy * 3);
+  ctx.stroke();
+
+  ctx.restore();
+});
+
+// remove dead stars
+shootingStars = shootingStars.filter(s => s.life > 0);
+
   // ================= PARALLAX =================
   if (!gameOver) {
     mountainX -= 0.15;
@@ -780,6 +811,22 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.lineTo(x, y + r);
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
+}
+
+/* =====================================================
+   HELPER: SHOOTING STARS
+===================================================== */
+function spawnShootingStar() {
+  const W = gameWidth();
+  const H = gameHeight();
+
+  shootingStars.push({
+    x: Math.random() * W * 0.8,
+    y: Math.random() * H * 0.4,
+    vx: Math.random() * 4 + 3,
+    vy: Math.random() * 2 + 1,
+    life: 40 + Math.random() * 20
+  });
 }
 
 /* =====================================================
