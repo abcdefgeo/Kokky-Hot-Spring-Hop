@@ -337,8 +337,8 @@ function doJump() {
   });
 
    // trigger hop squash
-squash = 0.6;
-squashSpeed = 0.08;
+squash = 0.88;
+squashSpeed = 0.04;
    
 }
 
