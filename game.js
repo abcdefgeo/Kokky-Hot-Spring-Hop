@@ -335,6 +335,11 @@ function doJump() {
     y: player.y + player.h - 3,
     life: 14
   });
+
+   // trigger hop squash
+squash = 0.85;
+squashSpeed = 0.08;
+   
 }
 
 window.addEventListener("keydown", e => {
@@ -351,10 +356,6 @@ canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   doJump();
 }, { passive: false });
-
-// trigger hop squash
-squash = 0.85;
-squashSpeed = 0.08;
 
 /* =====================================================
    HELPERS
