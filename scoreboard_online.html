@@ -292,9 +292,7 @@ const params = new URLSearchParams(location.search);
 const isAdminMode = params.get("admin") === "1";
 
 const modeText = document.getElementById("modeText");
-modeText.innerHTML = isAdminMode
-  ? "Admin mode (includes Admin IDs).<br>Showing overall scores (best ever) online."
-  : "Student view (hides Admin IDs).<br>Showing overall scores (best ever) online.";
+modeText.textContent = "Top 15 overall scores.";
 
 /* ===== LOAD ONLINE SCORES (TOP 15) ===== */
 async function loadOnlineScores() {
