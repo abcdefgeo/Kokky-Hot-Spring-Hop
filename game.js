@@ -1,9 +1,14 @@
-import { db } from "./firebase-init.js";
+import { db, auth, authReady } from "./firebase-init.js";
+
 import {
   doc,
   getDoc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 /* =====================================================
    CANVAS + DPR SETUP (LOCKED)
@@ -970,11 +975,15 @@ async function saveBestOnline(bestScore) {
   if (!playerId) return;
 
   try {
+    // wait until anonymous login is ready
+    if (!auth.currentUser) {
+      await authReady;
+    }
+
     const ref = doc(db, "scores", playerId);
     const snap = await getDoc(ref);
     const prev = snap.exists() ? (snap.data().score || 0) : 0;
 
-    // only update if improved
     if (bestScore <= prev) return;
 
     await setDoc(ref, {
@@ -987,4 +996,5 @@ async function saveBestOnline(bestScore) {
     console.error("saveBestOnline error:", err);
   }
 }
+
 
