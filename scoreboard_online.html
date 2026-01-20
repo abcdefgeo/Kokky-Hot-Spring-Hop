@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokky Online Scoreboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* simple fallback styling if style.css doesn't cover table */
+    .onlineWrap{max-width:720px;margin:0 auto;padding:18px}
+    .onlineCard{background:#0b0b12;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px}
+    .onlineHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .onlineHeader h1{font-size:18px;margin:0}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+    th{opacity:.8;font-weight:700}
+    .btn{background:#ffd966;color:#150818;border:none;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}
+    .muted{opacity:.7;font-size:12px}
+  </style>
+</head>
+
+<body>
+  <div class="onlineWrap">
+    <div class="onlineCard">
+      <div class="onlineHeader">
+        <div>
+          <h1>Online Top 15</h1>
+          <div class="muted" id="modeLabel"></div>
+        </div>
+        <button class="btn" id="exportBtn" style="display:none;">Export CSV</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th>Rank</th>
+          </tr>
+        </thead>
+        <tbody id="scoreBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db, authReady } from "./firebase-init.js";
+    import {
+      collection, getDocs, query, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    function getRankForScore(s) {
+      if (s >= 1000) return "Onsen God";
+      if (s >= 500) return "Onsen Legend";
+      if (s >= 250) return "King of the Onsen";
+      if (s >= 100) return "Onsen Overlord";
+      if (s >= 75) return "Steam Master";
+      if (s >= 50) return "Onsen Ace";
+      if (s >= 25) return "Steam Hopper";
+      return "—";
+    }
+
+    function teamColor(id) {
+      if (id.startsWith("W-")) return "#e8e8e8";
+      if (id.startsWith("R-")) return "#ff6b6b";
+      if (id.startsWith("G-")) return "#6bff8b";
+      if (id.startsWith("B-")) return "#6bb7ff";
+      return "#ffd966"; // Guest/Admin
+    }
+
+    const params = new URLSearchParams(location.search);
+    const isAdminMode = params.get("admin") === "1";
+
+    document.getElementById("modeLabel").textContent =
+      isAdminMode ? "Admin mode (includes Admin IDs)" : "Student view (hides Admin IDs)";
+
+    // wait for anonymous login
+    await authReady;
+
+    // fetch scores (grab extra so filtering still leaves 15)
+    const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(60));
+    const snap = await getDocs(q);
+
+    let rows = [];
+    snap.forEach(d => rows.push(d.data()));
+
+    // hide Admin for students
+    if (!isAdminMode) {
+      rows = rows.filter(r => !String(r.id || "").startsWith("Admin"));
+    }
+
+    rows = rows.slice(0, 15);
+
+    const body = document.getElementById("scoreBody");
+    body.innerHTML = rows.map((r, i) => {
+      const id = String(r.id || "");
+      const score = Number(r.score || 0);
+      const rank = getRankForScore(score);
+      const color = teamColor(id);
+
+      return `
+        <tr>
+          <td>${i + 1}</td>
+          <td style="color:${color}; font-weight:800;">${id}</td>
+          <td>${score}</td>
+          <td>${rank}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // CSV export (admin only)
+    const exportBtn = document.getElementById("exportBtn");
+    if (isAdminMode) {
+      exportBtn.style.display = "inline-block";
+      exportBtn.addEventListener("click", async () => {
+        const qAll = query(collection(db, "scores"), orderBy("score", "desc"), limit(500));
+        const snapAll = await getDocs(qAll);
+
+        let all = [];
+        snapAll.forEach(d => all.push(d.data()));
+
+        const csv = [
+          ["rank","playerId","score","updatedAt"].join(","),
+          ...all.map((r, idx) => {
+            const id = String(r.id || "");
+            const score = Number(r.score || 0);
+            const updatedAt = Number(r.updatedAt || 0);
+            return [idx + 1, id, score, updatedAt].join(",");
+          })
+        ].join("\n");
+
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "kokky_scores.csv";
+        a.click();
+
+        URL.revokeObjectURL(url);
+      });
+    }
+  </script>
+</body>
+</html>
