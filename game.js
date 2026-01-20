@@ -971,30 +971,50 @@ function saveScore() {
 // ================= ONLINE SAVE =================
 
 async function saveBestOnline(bestScore) {
+  console.log("saveBestOnline called", bestScore);
+
   const playerId = localStorage.getItem("playerId");
-  if (!playerId) return;
+  if (!playerId) {
+    console.log("no playerId, abort");
+    return;
+  }
 
   try {
-    // wait until anonymous login is ready
+    // wait for anonymous auth
     if (!auth.currentUser) {
+      console.log("waiting for auth...");
       await authReady;
     }
+
+    console.log("auth ok, writing to firestore", playerId, bestScore);
 
     const ref = doc(db, "scores", playerId);
     const snap = await getDoc(ref);
     const prev = snap.exists() ? (snap.data().score || 0) : 0;
 
-    if (bestScore <= prev) return;
+    console.log("previous score:", prev);
 
-    await setDoc(ref, {
-      id: playerId,
-      score: bestScore,
-      updatedAt: Date.now()
-    }, { merge: true });
+    if (bestScore <= prev) {
+      console.log("score not higher, skip write");
+      return;
+    }
+
+    await setDoc(
+      ref,
+      {
+        id: playerId,
+        score: bestScore,
+        updatedAt: Date.now()
+      },
+      { merge: true }
+    );
+
+    console.log("Firestore write SUCCESS");
 
   } catch (err) {
     console.error("saveBestOnline error:", err);
   }
 }
+
 
 
