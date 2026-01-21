@@ -521,7 +521,7 @@ function drawMountainsAndSteam() {
   ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
 
   // steam/onsen (foreground) — tile using the image's REAL width
-  ctx.globalAlpha = 0.65;
+  ctx.globalAlpha = 0.95;
 
 const STEAM_DRAW_H = 240;   // show full water
 const STEAM_OVERLAP = -15; // hide the hard line
@@ -529,7 +529,7 @@ const STEAM_OVERLAP = -15; // hide the hard line
   const scale = STEAM_DRAW_H / steamImg.height;
   const tileW = steamImg.width * scale;
 
-  const steamY = (H - STEAM_DRAW_H) + STEAM_OVERLAP; // <-- fixed
+  const steamY = H - STEAM_DRAW_H; // always keep water visible at bottom
 
   let startX = steamX % tileW;
   if (startX > 0) startX -= tileW;
