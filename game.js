@@ -523,8 +523,8 @@ function drawMountainsAndSteam() {
   // steam/onsen (foreground) — tile using the image's REAL width
   ctx.globalAlpha = 0.55;
 
-  const STEAM_DRAW_H = 120;   // how tall on screen (try 120 first)
-  const STEAM_OVERLAP = 24;   // overlap into mountains (12–36)
+  const STEAM_DRAW_H = 150;   // how tall on screen (try 120 first)
+  const STEAM_OVERLAP = 40;   // overlap into mountains (12–36)
 
   const scale = STEAM_DRAW_H / steamImg.height;
   const tileW = steamImg.width * scale;
@@ -681,7 +681,7 @@ shootingStars = shootingStars.filter(s => s.life > 0);
     mountainX -= 0.15;
     if (mountainX <= -W) mountainX = 0;
 
-    const STEAM_DRAW_H = 120; // must match draw function
+    const STEAM_DRAW_H = 150; // must match draw function
 const scale = STEAM_DRAW_H / steamImg.height;
 const tileW = steamImg.width * scale;
 
