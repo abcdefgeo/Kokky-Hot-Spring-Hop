@@ -820,14 +820,7 @@ ctx.restore();
 
   // ================= BANNER =================
    
-drawBanner();
-   
-  // ================= BOTTOM STEAM =================
-  ctx.globalAlpha = 0.55;
-  const steamY = H - 120;
-  ctx.drawImage(steamImg, steamX, steamY);
-  ctx.drawImage(steamImg, steamX + W, steamY);
-  ctx.globalAlpha = 1;
+drawBanner();   
 
   // ================= DEATH FADE =================
   if (deathFade > 0) {
