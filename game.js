@@ -514,18 +514,22 @@ function drawMountainsAndSteam() {
   const W = gameWidth();
   const H = gameHeight();
 
-  // farther mountains (smaller + lower)
+  // farther mountains (background)
   const mountainH = 160;
-  const mountainY = H - 260; // leaves room for steam layer
+  const mountainY = H - 260;
 
   ctx.drawImage(mountainsImg, mountainX, mountainY, W, mountainH);
   ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
 
-  // bottom steam
+  // bottom steam (foreground, slight overlap)
   ctx.globalAlpha = 0.55;
-  const steamY = H - 120;
+
+  const STEAM_OVERLAP = 24; // try 12 / 24 / 36 if needed
+  const steamY = (H - 120) - STEAM_OVERLAP;
+
   ctx.drawImage(steamImg, steamX, steamY);
   ctx.drawImage(steamImg, steamX + W, steamY);
+
   ctx.globalAlpha = 1;
 }
 
