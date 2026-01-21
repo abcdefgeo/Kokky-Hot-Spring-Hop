@@ -564,10 +564,16 @@ function drawObstacle(obs) {
   }
 
   function drawMid(x, y, h) {
-    if (h <= 0) return;
-    if (!bambooMidImg || !bambooMidImg.complete || !bambooMidImg.naturalWidth) return;
-    ctx.drawImage(bambooMidImg, x, y, OB_W, h);
+  if (h <= 0) return;
+  if (!bambooMidImg.complete || !bambooMidImg.naturalWidth) return;
+
+  const tileH = OB_W * (bambooMidImg.naturalHeight / bambooMidImg.naturalWidth);
+
+  for (let yy = y; yy < y + h; yy += tileH) {
+    const drawH = Math.min(tileH, (y + h) - yy);
+    ctx.drawImage(bambooMidImg, x, yy, OB_W, drawH);
   }
+}
 
   // ---------- TOP OBSTACLE ----------
   const topH = obs.gapY;
