@@ -511,10 +511,8 @@ for (const f of snow) {
    DRAW: MOUNTAINS + STEAM
 ===================================================== */
 function drawMountainsAndSteam() {
-  ctx.globalAlpha = 1;
-  ctx.drawImage(steamImg, 0, 0);
-  return;
-}
+  const W = gameWidth();
+  const H = gameHeight();
 
   // mountains (background)
   const mountainH = 160;
@@ -631,8 +629,9 @@ document.getElementById("bestValue").textContent = bestScore;
   const W = gameWidth();
   const H = gameHeight();
 
-  // ================= BACKGROUND =================
-  drawSkyAndMoon();
+// ================= BACKGROUND =================
+drawSkyAndMoon();
+drawMountainsAndSteam();
 
  // update snow (always active)
 for (const f of snow) {
