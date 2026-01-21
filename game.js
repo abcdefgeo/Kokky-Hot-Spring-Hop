@@ -701,12 +701,6 @@ if (!gameOver) {
     player.y += player.vy;
   }
 
-  // ================= MOUNTAINS (behind obstacles) =================
-  const mountainH = 160;
-  const mountainY = H - 260;
-  ctx.drawImage(mountainsImg, mountainX, mountainY, W, mountainH);
-  ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
-
   // ================= OBSTACLES =================
   if (started && !gameOver) {
     if (
