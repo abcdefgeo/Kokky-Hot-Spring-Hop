@@ -521,10 +521,10 @@ function drawMountainsAndSteam() {
   ctx.drawImage(mountainsImg, mountainX + W, mountainY, W, mountainH);
 
   // steam/onsen (foreground) — tile using the image's REAL width
-  ctx.globalAlpha = 0.85;
+  ctx.globalAlpha = 0.65;
 
-const STEAM_DRAW_H = 220;   // show full water
-const STEAM_OVERLAP = -30; // hide the hard line
+const STEAM_DRAW_H = 240;   // show full water
+const STEAM_OVERLAP = -15; // hide the hard line
 
   const scale = STEAM_DRAW_H / steamImg.height;
   const tileW = steamImg.width * scale;
@@ -681,7 +681,7 @@ shootingStars = shootingStars.filter(s => s.life > 0);
     mountainX -= 0.15;
     if (mountainX <= -W) mountainX = 0;
 
-    const STEAM_DRAW_H = 220; // must match draw function
+    const STEAM_DRAW_H = 240; // must match draw function
 const scale = STEAM_DRAW_H / steamImg.height;
 const tileW = steamImg.width * scale;
 
