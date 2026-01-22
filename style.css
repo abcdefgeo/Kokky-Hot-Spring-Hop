@@ -227,3 +227,8 @@ body {
   image-rendering: pixelated;
   filter: drop-shadow(0 0 10px rgba(200,220,255,0.6));
 }
+
+.teamBtn.dev {
+  background: #6141ac;
+  color: #ffffff;
+}
