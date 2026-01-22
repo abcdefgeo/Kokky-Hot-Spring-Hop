@@ -270,7 +270,7 @@ const GAP = 150;
 let SPEED = 2.5;
 const SPAWN_DISTANCE = 270;
 
-const OB_W = 96;
+const OB_W = 80;
 
 /* =====================================================
    ASSETS
@@ -281,8 +281,21 @@ const mountainsImg = new Image(); mountainsImg.src = "mountains.png";
 const steamImg = new Image();     steamImg.src     = "steam.png";
 
 let woodPattern = null;
+
 woodImg.onload = () => {
-  woodPattern = ctx.createPattern(woodImg, "repeat");
+  // Make a scaled bamboo tile that matches OB_W (so it won't get "cut")
+  const tile = document.createElement("canvas");
+  tile.width = OB_W;
+  tile.height = woodImg.height;
+
+  const tctx = tile.getContext("2d");
+  tctx.imageSmoothingEnabled = false; // keep pixel-ish look
+  tctx.clearRect(0, 0, tile.width, tile.height);
+
+  // Scale the full bamboo image into the new width
+  tctx.drawImage(woodImg, 0, 0, woodImg.width, woodImg.height, 0, 0, OB_W, woodImg.height);
+
+  woodPattern = ctx.createPattern(tile, "repeat");
 };
 
 /* =====================================================
