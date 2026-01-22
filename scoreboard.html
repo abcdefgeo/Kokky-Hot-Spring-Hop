@@ -195,9 +195,12 @@ function getRankForScore(score) {
   function getPlayerColor(playerId) {
   if (!playerId) return "#ffffff";
 
-  if (playerId === "Guest" || playerId.startsWith("Admin")) {
-    return "#ffd966"; // warm gold
-  }
+if (playerId === "Guest") {
+  return "#ffd966";
+}
+if (playerId.startsWith("Dev")) {
+  return "#6141ac";
+}
 
   const team = playerId[0];
 
