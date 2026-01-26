@@ -560,31 +560,22 @@ function drawMountainsAndSteam() {
 }
 
 /* =====================================================
-   DRAW: OBSTACLES (tiled wood texture)
+   DRAW: OBSTACLES
 ===================================================== */
 function drawObstacle(obs) {
   const H = gameHeight();
 
-  if (woodPattern) {
-    // no save/restore, no translate, no setTransform
-    ctx.fillStyle = woodPattern;
+  // top
+  ctx.drawImage(woodImg, obs.x, 0, OB_W, obs.gapY);
 
-    // top
-    ctx.fillRect(obs.x, 0, OB_W, obs.gapY);
-
-    // bottom
-    ctx.fillRect(
-      obs.x,
-      obs.gapY + GAP,
-      OB_W,
-      H - (obs.gapY + GAP)
-    );
-
-  } else {
-    // fallback until wood loads
-    ctx.drawImage(woodImg, obs.x, 0, OB_W, obs.gapY);
-    ctx.drawImage(woodImg, obs.x, obs.gapY + GAP, OB_W, H - (obs.gapY + GAP));
-  }
+  // bottom
+  ctx.drawImage(
+    woodImg,
+    obs.x,
+    obs.gapY + GAP,
+    OB_W,
+    H - (obs.gapY + GAP)
+  );
 }
 
 function checkRankUnlock() {
