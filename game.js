@@ -461,7 +461,7 @@ for (const s of stars) {
 
   // stronger, softer glow
   ctx.shadowColor = s.c;
-  ctx.shadowBlur = 10;
+  ctx.shadowBlur = 0;
 
   ctx.fillStyle = s.c;
   ctx.beginPath();
@@ -502,8 +502,7 @@ for (const f of snow) {
 
   ctx.globalAlpha = f.alpha;
   ctx.fillStyle = "#ffffff";
-  ctx.shadowColor = "rgba(255,255,255,0.6)";
-  ctx.shadowBlur = f.r * 2;
+  ctx.shadowBlur = 0;
 
   ctx.beginPath();
   ctx.ellipse(
@@ -681,7 +680,7 @@ shootingStars.forEach(s => {
   ctx.strokeStyle = "#fff2b0";
   ctx.lineWidth = 2;
   ctx.shadowColor = "#ffd966";
-  ctx.shadowBlur = 12;
+  ctx.shadowBlur = 0;
 
   ctx.beginPath();
   ctx.moveTo(s.x, s.y);
@@ -881,7 +880,7 @@ function drawBanner() {
 
   /* === SOFT GOLD GLOW === */
   ctx.shadowColor = "rgba(245, 215, 110, 0.6)";
-  ctx.shadowBlur = 18;
+  ctx.shadowBlur = 0;
 
   /* === GOLD GRADIENT CARD === */
   const grad = ctx.createLinearGradient(
