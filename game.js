@@ -547,7 +547,7 @@ function drawMountainsAndSteam() {
    BAMBOO STRIP
 ===================================================== */
 function buildBambooStrip() {
-  if (!woodImg || !woodImg.complete) return;
+  if (typeof woodImg === "undefined" || !woodImg || !woodImg.complete) return;
 
   bambooStripH = Math.max(1200, Math.ceil(gameHeight() + 400)); // tall enough
   bambooStrip = document.createElement("canvas");
