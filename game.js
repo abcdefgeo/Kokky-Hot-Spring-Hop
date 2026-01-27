@@ -31,6 +31,7 @@ function resizeCanvas() {
 
   // resize-dependent visuals
   initBackground();
+  buildBambooStrip();
 }
 
 function gameWidth()  { return canvas.width / DPR; }
@@ -39,6 +40,8 @@ function gameHeight() { return canvas.height / DPR; }
 let stars = [];
 let snow = [];
 let shootingStars = [];
+let bambooStrip = null;
+let bambooStripH = 0;
 
 const player = {
   x: 80,
@@ -283,19 +286,7 @@ const steamImg = new Image();     steamImg.src     = "steam.png";
 let woodPattern = null;
 
 woodImg.onload = () => {
-  // Make a scaled bamboo tile that matches OB_W (so it won't get "cut")
-  const tile = document.createElement("canvas");
-  tile.width = OB_W;
-  tile.height = woodImg.height;
-
-  const tctx = tile.getContext("2d");
-  tctx.imageSmoothingEnabled = false; // keep pixel-ish look
-  tctx.clearRect(0, 0, tile.width, tile.height);
-
-  // Scale the full bamboo image into the new width
-  tctx.drawImage(woodImg, 0, 0, woodImg.width, woodImg.height, 0, 0, OB_W, woodImg.height);
-
-  woodPattern = ctx.createPattern(tile, "repeat");
+  buildBambooStrip();
 };
 
 /* =====================================================
@@ -553,34 +544,48 @@ function drawMountainsAndSteam() {
 }
 
 /* =====================================================
+   BAMBOO STRIP
+===================================================== */
+function buildBambooStrip() {
+  if (!woodImg || !woodImg.complete) return;
+
+  bambooStripH = Math.max(1200, Math.ceil(gameHeight() + 400)); // tall enough
+  bambooStrip = document.createElement("canvas");
+  bambooStrip.width = OB_W;         // 80
+  bambooStrip.height = bambooStripH;
+
+  const bctx = bambooStrip.getContext("2d");
+
+  // tile the woodImg vertically ONCE into bambooStrip
+  const tileH = woodImg.height || 64;
+  for (let y = 0; y < bambooStripH; y += tileH) {
+    bctx.drawImage(woodImg, 0, y, OB_W, tileH);
+  }
+}
+
+/* =====================================================
    DRAW: OBSTACLES
 ===================================================== */
 function drawObstacle(obs) {
   const H = gameHeight();
+  if (!bambooStrip) return; // safety
 
-  // top
-  drawTiledVertical(obs.x, 0, obs.gapY);
+  // TOP: take from top of strip
+  ctx.drawImage(
+    bambooStrip,
+    0, 0, OB_W, obs.gapY,        // source crop
+    obs.x, 0, OB_W, obs.gapY     // destination
+  );
 
-  // bottom
-  drawTiledVertical(obs.x, obs.gapY + GAP, H - (obs.gapY + GAP));
-}
+  // BOTTOM: take from top of strip (tiling repeats anyway)
+  const bottomY = obs.gapY + GAP;
+  const bottomH = H - bottomY;
 
-// tiles woodImg ONLY vertically (assumes woodImg is 80px wide)
-function drawTiledVertical(x, y, h) {
-  if (!woodImg || !woodImg.complete) return;
-
-  const tileH = woodImg.height;
-  if (!tileH) return;
-
-  for (let yy = y; yy < y + h; yy += tileH) {
-    const sliceH = Math.min(tileH, (y + h) - yy);
-
-    ctx.drawImage(
-      woodImg,
-      0, 0, OB_W, sliceH,   // source
-      x, yy, OB_W, sliceH   // destination
-    );
-  }
+  ctx.drawImage(
+    bambooStrip,
+    0, 0, OB_W, bottomH,         // source crop
+    obs.x, bottomY, OB_W, bottomH
+  );
 }
 
 function checkRankUnlock() {
