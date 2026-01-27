@@ -416,10 +416,15 @@ const maxY = H - GAP - 180;      // allow lower gaps
 
 let gapY = Math.random() * (maxY - minY) + minY;
 
-// push some gaps more toward top or bottom
-if (Math.random() < 0.5) {
-  gapY += Math.random() * 120 - 60; // wider swing
+// sometimes force extreme top/bottom gaps
+if (Math.random() < 0.25) {
+  if (Math.random() < 0.5) {
+    gapY = minY + Math.random() * 40;           // near top
+  } else {
+    gapY = maxY - Math.random() * 40;           // near bottom
+  }
 }
+
 
   obstacles.push({
     x: spawnX,
@@ -564,34 +569,28 @@ function drawMountainsAndSteam() {
 function drawObstacle(obs) {
   const H = gameHeight();
 
-  // draw a tiled column using repeated drawImage (stable on mobile)
-  drawTiledColumn(obs.x, 0, OB_W, obs.gapY);
-  drawTiledColumn(obs.x, obs.gapY + GAP, OB_W, H - (obs.gapY + GAP));
+  // top
+  drawTiledVertical(obs.x, 0, obs.gapY);
+
+  // bottom
+  drawTiledVertical(obs.x, obs.gapY + GAP, H - (obs.gapY + GAP));
 }
 
-// tiles woodImg vertically (and horizontally if needed)
-function drawTiledColumn(x, y, w, h) {
+// tiles woodImg ONLY vertically (assumes woodImg is 80px wide)
+function drawTiledVertical(x, y, h) {
   if (!woodImg || !woodImg.complete) return;
 
-  const tileW = woodImg.width;
   const tileH = woodImg.height;
-
-  // if image hasn't loaded dimensions yet, bail safely
-  if (!tileW || !tileH) return;
+  if (!tileH) return;
 
   for (let yy = y; yy < y + h; yy += tileH) {
     const sliceH = Math.min(tileH, (y + h) - yy);
 
-    // usually OB_W is smaller than tileW, but handle both cases
-    for (let xx = x; xx < x + w; xx += tileW) {
-      const sliceW = Math.min(tileW, (x + w) - xx);
-
-      ctx.drawImage(
-        woodImg,
-        0, 0, sliceW, sliceH,   // source slice
-        xx, yy, sliceW, sliceH  // destination slice
-      );
-    }
+    ctx.drawImage(
+      woodImg,
+      0, 0, OB_W, sliceH,   // source
+      x, yy, OB_W, sliceH   // destination
+    );
   }
 }
 
