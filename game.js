@@ -39,8 +39,6 @@ function gameHeight() { return canvas.height / DPR; }
 let stars = [];
 let snow = [];
 let shootingStars = [];
-let bambooStrip = null;
-let bambooStripH = 0;
 
 const player = {
   x: 80,
@@ -278,15 +276,9 @@ const OB_W = 80;
    ASSETS
 ===================================================== */
 const kokkyImg = new Image(); kokkyImg.src = "kokky.png";
-const woodImg  = new Image(); woodImg.src  = "wood.png";
+const bambooImg = new Image(); bambooImg.src = "bamboo.png";   // NEW
 const mountainsImg = new Image(); mountainsImg.src = "mountains.png";
 const steamImg = new Image();     steamImg.src     = "steam.png";
-
-let woodPattern = null;
-
-woodImg.onload = () => {
-  buildBambooStrip();
-};
 
 /* =====================================================
    BACKGROUND (stars + snow) init (size dependent)
@@ -543,47 +535,21 @@ function drawMountainsAndSteam() {
 }
 
 /* =====================================================
-   BAMBOO STRIP
-===================================================== */
-function buildBambooStrip() {
-  if (!woodImg.complete) return;
-
-  bambooStripH = Math.max(1200, Math.ceil(gameHeight() + 400)); // tall enough
-  bambooStrip = document.createElement("canvas");
-  bambooStrip.width = OB_W;         // 80
-  bambooStrip.height = bambooStripH;
-
-  const bctx = bambooStrip.getContext("2d");
-
-  // tile the woodImg vertically ONCE into bambooStrip
-  const tileH = woodImg.height || 64;
-  for (let y = 0; y < bambooStripH; y += tileH) {
-    bctx.drawImage(woodImg, 0, y, OB_W, tileH);
-  }
-}
-
-/* =====================================================
    DRAW: OBSTACLES
 ===================================================== */
 function drawObstacle(obs) {
   const H = gameHeight();
-  if (!bambooStrip) return; // safety
 
-  // TOP: take from top of strip
+  // top
+  ctx.drawImage(bambooImg, obs.x, 0, OB_W, obs.gapY);
+
+  // bottom
   ctx.drawImage(
-    bambooStrip,
-    0, 0, OB_W, obs.gapY,        // source crop
-    obs.x, 0, OB_W, obs.gapY     // destination
-  );
-
-  // BOTTOM: take from top of strip (tiling repeats anyway)
-  const bottomY = obs.gapY + GAP;
-  const bottomH = H - bottomY;
-
-  ctx.drawImage(
-    bambooStrip,
-    0, 0, OB_W, bottomH,         // source crop
-    obs.x, bottomY, OB_W, bottomH
+    bambooImg,
+    obs.x,
+    obs.gapY + GAP,
+    OB_W,
+    H - (obs.gapY + GAP)
   );
 }
 
